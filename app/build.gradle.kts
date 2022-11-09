@@ -34,7 +34,7 @@ dependencies {
     implementation(group = "club.minnced", name = "discord-webhooks", version = "0.8.2")
 
     implementation(group = "com.coreoz", name = "wisp", version = "2.3.0")
-    implementation(group = "com.cronutils", name = "cron-utils", version = "9.2.0")
+    implementation(group = "ch.eitchnet", name = "cron", version = "1.6.2")
 
     implementation(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = "2.14.0")
     implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.14.0")
