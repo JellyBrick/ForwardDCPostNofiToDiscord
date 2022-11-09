@@ -28,7 +28,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.system.exitProcess
 
 class App {
@@ -55,9 +54,14 @@ class App {
         .build()
     private val checkedArticle = ConcurrentHashMap.newKeySet<Int>()
     private val cachedDispatcher = Executors.newCachedThreadPool().asCoroutineDispatcher()
-    private val webhookClient = WebhookClientBuilder(setting.webhookUrl)
-        .setHttpClient(okHttpClient)
-        .build()
+    private val webhookClient by lazy {
+        logger.info("웹훅 설정 중")
+        val webhook = WebhookClientBuilder(setting.webhookUrl)
+            .setHttpClient(okHttpClient)
+            .build()
+        logger.info("웹훅 설정 완료")
+        webhook
+    }
     private val scheduler = Scheduler()
     private var endArticleIds = ConcurrentHashMap<Int, Int>()
 
@@ -84,97 +88,112 @@ class App {
             logger.info("세션 생성 완료!")
         }
 
+        crawling()
+        logger.info("크롤링 설정 완료")
+
         scheduler.schedule(
             this::crawling,
             CronExpressionSchedule.parseWithSeconds(setting.cron) // ex: 0 0 * * * ? * = Every hour
         )
     }
 
-    private fun crawling() = runBlocking {
+    private fun crawling() = runBlocking(cachedDispatcher) {
         setting.headIds.pForEach { headId ->
             var breakLoop = false
             var page = 1
-            val validator = AtomicInteger(
-                if (endArticleIds.getOrDefault(headId, 0) != 0) {
-                    endArticleIds.getValue(headId)
-                } else {
-                    -1
-                }
-            )
+            var tempLastArticleId = 0
+
             do {
                 val articleList = ArticleList(
                     gallId = setting.galleryId,
                     page = page++,
                     headId = headId
                 )
-                launch(cachedDispatcher) {
-                    var breakSubLoop = false
-                    while (!breakSubLoop) {
-                        try {
-                            articleList.request()
-                        } catch (e: Exception) {
-                            logger.error("Exception in ArticleList request", e)
-                            continue
-                        }
-                        breakSubLoop = true
-                        val gallList = articleList.getGallList()
-                        if (validator.get() == -1) {
-                            endArticleIds[headId] = gallList.first().identifier
-                            validator.set(gallList.first().identifier)
-                            continue
-                        }
-                        withContext(cachedDispatcher) {
-                            gallList.pForEach subForEach@{
-                                val endArticleId = endArticleIds.getValue(headId)
-                                if (
-                                    checkedArticle.contains(it.identifier) ||
-                                    (it.identifier < endArticleId && validator.getAndDecrement() >= endArticleId)
-                                ) {
-                                    // 이미 크롤링한 글 스킵
-                                    return@subForEach
-                                } else if (validator.get() < endArticleId) {
-                                    breakLoop = true
-                                    return@subForEach
-                                }
-                                validator.decrementAndGet()
-
-                                val articleRead = ArticleRead(
-                                    gallId = setting.galleryId,
-                                    articleId = it.identifier
-                                )
-                                try {
-                                    articleRead.request()
-                                } catch (e: Exception) {
-                                    logger.error("Exception in ArticleRead request", e)
-                                    return@subForEach
-                                }
-                                checkedArticle.add(it.identifier)
-
-                                val articleInfo = articleRead.getViewInfo()
-                                val articleMain = articleRead.getViewMain()
-                                val html = StringEscapeUtils.unescapeHtml4(articleMain.content)
-                                val unescapedContent = Jsoup.parse(html).text().trim()
-
-                                webhookClient.send(
-                                    WebhookEmbedBuilder().apply {
-                                        setTitle(
-                                            WebhookEmbed.EmbedTitle(
-                                                articleInfo.subject,
-                                                if (!articleList.getGallInfo().isMini) {
-                                                    "https://m.dcinside.com/board/${setting.galleryId}/${articleInfo.identifier}"
-                                                } else {
-                                                    "https://m.dcinside.com/mini/${setting.galleryId.replaceFirst("mi$", "")}/${articleInfo.identifier}"
-                                                }
-                                            )
-                                        )
-                                        setDescription(unescapedContent)
-                                    }.build()
-                                )
+                var breakSubLoop = false
+                while (!breakSubLoop) {
+                    try {
+                        articleList.request()
+                    } catch (e: Exception) {
+                        logger.error("Exception in ArticleList request", e)
+                        continue
+                    }
+                    breakSubLoop = true
+                    val gallList = articleList.getGallList()
+                    if (page == 2) {
+                        tempLastArticleId = gallList.first().identifier
+                    }
+                    val endArticleId = endArticleIds[headId]
+                    if (endArticleId == null || gallList.last().identifier <= endArticleId) {
+                        breakLoop = true
+                    }
+                    if (endArticleId != null) {
+                        gallList.asReversed().parallelStream().forEach {
+                            if (checkedArticle.contains(it.identifier)) {
+                                // 이미 크롤링했던 글 스킵
+                                return@forEach
                             }
+
+                            val articleRead = ArticleRead(
+                                gallId = setting.galleryId,
+                                articleId = it.identifier
+                            )
+                            try {
+                                articleRead.request()
+                            } catch (e: Exception) {
+                                logger.error("Exception in ArticleRead request", e)
+                                return@forEach
+                            }
+                            checkedArticle.add(it.identifier)
+
+                            val articleInfo = articleRead.getViewInfo()
+                            val articleMain = articleRead.getViewMain()
+                            val html = StringEscapeUtils.unescapeHtml4(articleMain.content)
+                            val unescapedContent = Jsoup.parse(html).text().trim()
+
+                            webhookClient.send(
+                                WebhookEmbedBuilder().apply {
+                                    setTitle(
+                                        WebhookEmbed.EmbedTitle(
+                                            if (articleInfo.headTitle.isNotEmpty()) {
+                                                "[${articleInfo.headTitle}] "
+                                            } else {
+                                                " "
+                                            } + StringEscapeUtils.unescapeHtml4(articleInfo.subject),
+                                            if (!articleList.getGallInfo().isMini) {
+                                                "https://m.dcinside.com/board/${setting.galleryId}/${articleInfo.identifier}"
+                                            } else {
+                                                "https://m.dcinside.com/mini/${setting.galleryId.replaceFirst(
+                                                    "mi$",
+                                                    ""
+                                                )}/${articleInfo.identifier}"
+                                            }
+                                        )
+                                    )
+                                    setDescription(unescapedContent)
+                                    setAuthor(
+                                        WebhookEmbed.EmbedAuthor(
+                                            articleInfo.name + if (articleInfo.ip.isNotEmpty()) {
+                                                " (${articleInfo.ip})"
+                                            } else {
+                                                " (${articleInfo.userId})"
+                                            },
+                                            null,
+                                            null
+                                        )
+                                    )
+                                    setFooter(
+                                        WebhookEmbed.EmbedFooter(
+                                            articleList.getGallInfo().title,
+                                            null
+                                        )
+                                    )
+                                }.build()
+                            )
                         }
                     }
                 }
             } while (setting.breakpointMode && !breakLoop)
+            endArticleIds[headId] = tempLastArticleId
         }
     }
 }
