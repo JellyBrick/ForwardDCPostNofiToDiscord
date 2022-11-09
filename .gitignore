@@ -1,0 +1,14 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+.idea
+
+# Ignore Gradle build output directory
+build
+cache
+
+# Setting file
+setting.json
+
+# jar
+app-all.jar
+user.dic
