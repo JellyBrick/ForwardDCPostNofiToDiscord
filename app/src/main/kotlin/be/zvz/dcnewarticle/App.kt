@@ -88,7 +88,7 @@ class App {
             logger.info("세션 생성 완료!")
         }
 
-        crawling()
+        crawling(true)
         logger.info("크롤링 설정 완료")
 
         scheduler.schedule(
@@ -97,7 +97,7 @@ class App {
         )
     }
 
-    private fun crawling() = runBlocking(cachedDispatcher) {
+    private fun crawling(firstRun: Boolean = false) = runBlocking(cachedDispatcher) {
         setting.headIds.pForEach { headId ->
             var breakLoop = false
             var page = 1
@@ -123,9 +123,25 @@ class App {
                         tempLastArticleId = gallList.first().identifier
                     }
                     val endArticleId = endArticleIds[headId]
-                    if (endArticleId == null || gallList.last().identifier <= endArticleId) {
+
+                    if (firstRun) {
+                        logger.info("{} 페이지 프리인덱싱 중", page - 1)
+                        gallList.forEach {
+                            if (checkedArticle.contains(it.identifier)) {
+                                return@forEach
+                            } else {
+                                checkedArticle.add(it.identifier)
+                            }
+                        }
+                        if (endArticleId == null) {
+                            endArticleIds[headId] = tempLastArticleId
+                        } else if (gallList.last().identifier <= endArticleId) {
+                            breakLoop = true
+                        }
+                    } else if (endArticleId == null || gallList.last().identifier <= endArticleId) {
                         breakLoop = true
                     }
+
                     if (endArticleId != null) {
                         gallList.asReversed().parallelStream().forEach {
                             if (checkedArticle.contains(it.identifier)) {
@@ -183,7 +199,7 @@ class App {
                                     )
                                     setFooter(
                                         WebhookEmbed.EmbedFooter(
-                                            articleList.getGallInfo().title,
+                                            articleList.getGallInfo().title + " 갤러리",
                                             null
                                         )
                                     )
