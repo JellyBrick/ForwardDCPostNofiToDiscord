@@ -12,7 +12,7 @@ Forward DCInside new post notification to discord using webhook
   "galleryId": "Gallery ID, mini gallery -> mi$galleryId, others -> galleryId",
   "cron": "6 fields Cron expression, (example: 0 0 * * * ? *)",
   "webhookUrl": "Discord Webhook URL",
-  "headIds": [head-text-id (int)],
+  "headIds": [head-text-id (int, required, default head-text id: 0)],
   "breakpointMode": reading post from after breakpoint (boolean, optional, default: true),
   "useCache": enable HTTP cache (boolean, optional, default: false),
   "cacheDirectory": cache directory path (string, optional, default: "path"),
