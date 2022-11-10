@@ -5,7 +5,7 @@ data class Setting(
     val cron: String,
     val webhookUrl: String,
     val headIds: List<Int>,
-    val breakpointMode: Boolean = false,
+    val breakpointMode: Boolean = true,
     val useCache: Boolean = false,
     val cacheDirectory: String = "cache",
     val cacheSize: Long = -1
