@@ -43,7 +43,7 @@ dependencies {
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.4.5")
     implementation(group = "org.fusesource.jansi", name = "jansi", version = "2.4.0")
 
-    implementation(group = "com.squareup.okhttp3", name = "okhttp-jvm", version = "5.0.0-alpha.10")
+    implementation(group = "com.squareup.okhttp3", name = "okhttp-jvm", version = "5.0.0-alpha.11")
     implementation(group = "com.squareup.okhttp3", name = "okhttp-brotli", version = "5.0.0-alpha.10")
 
     implementation(group = "org.jsoup", name = "jsoup", version = "1.15.3")
