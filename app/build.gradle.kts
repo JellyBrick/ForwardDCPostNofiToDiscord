@@ -38,7 +38,7 @@ dependencies {
 
     implementation(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = "2.15.2")
     implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.14.2")
-    implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-blackbird", version = "2.14.2")
+    implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-blackbird", version = "2.15.2")
 
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.4.11")
     implementation(group = "org.fusesource.jansi", name = "jansi", version = "2.4.0")
