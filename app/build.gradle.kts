@@ -47,7 +47,7 @@ dependencies {
     implementation(group = "com.squareup.okhttp3", name = "okhttp-brotli", version = "5.0.0-alpha.11")
 
     implementation(group = "org.jsoup", name = "jsoup", version = "1.15.4")
-    implementation(group = "org.apache.tika", name = "tika-core", version = "2.7.0")
+    implementation(group = "org.apache.tika", name = "tika-core", version = "2.9.0")
 }
 
 application {
