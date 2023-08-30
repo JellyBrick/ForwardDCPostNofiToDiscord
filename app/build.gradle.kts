@@ -33,7 +33,7 @@ dependencies {
     implementation(group = "org.apache.commons", name = "commons-text", version = "1.10.0")
     implementation(group = "club.minnced", name = "discord-webhooks", version = "0.8.4")
 
-    implementation(group = "com.coreoz", name = "wisp", version = "2.3.0")
+    implementation(group = "com.coreoz", name = "wisp", version = "2.4.0")
     implementation(group = "ch.eitchnet", name = "cron", version = "1.6.2")
 
     implementation(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = "2.15.2")
