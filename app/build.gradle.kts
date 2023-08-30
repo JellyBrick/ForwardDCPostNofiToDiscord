@@ -31,7 +31,7 @@ dependencies {
 
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0")
     implementation(group = "org.apache.commons", name = "commons-text", version = "1.10.0")
-    implementation(group = "club.minnced", name = "discord-webhooks", version = "0.8.2")
+    implementation(group = "club.minnced", name = "discord-webhooks", version = "0.8.4")
 
     implementation(group = "com.coreoz", name = "wisp", version = "2.3.0")
     implementation(group = "ch.eitchnet", name = "cron", version = "1.6.2")
