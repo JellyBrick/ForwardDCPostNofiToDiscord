@@ -36,7 +36,7 @@ dependencies {
     implementation(group = "com.coreoz", name = "wisp", version = "2.3.0")
     implementation(group = "ch.eitchnet", name = "cron", version = "1.6.2")
 
-    implementation(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = "2.15.2")
+    implementation(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = "2.16.1")
     implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.15.2")
     implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-blackbird", version = "2.15.2")
 
