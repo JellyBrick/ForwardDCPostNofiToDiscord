@@ -29,7 +29,7 @@ dependencies {
     // DC API
     implementation(group = "be.zvz", name = "KotlinInside", version = "1.15.0")
 
-    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0")
+    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.14.0")
     implementation(group = "org.apache.commons", name = "commons-text", version = "1.10.0")
     implementation(group = "club.minnced", name = "discord-webhooks", version = "0.8.4")
 
