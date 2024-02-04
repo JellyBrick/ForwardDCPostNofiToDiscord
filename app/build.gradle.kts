@@ -41,7 +41,7 @@ dependencies {
     implementation(group = "com.fasterxml.jackson.module", name = "jackson-module-blackbird", version = "2.15.2")
 
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.4.11")
-    implementation(group = "org.fusesource.jansi", name = "jansi", version = "2.4.0")
+    implementation(group = "org.fusesource.jansi", name = "jansi", version = "2.4.1")
 
     implementation(group = "com.squareup.okhttp3", name = "okhttp-jvm", version = "5.0.0-alpha.11")
     implementation(group = "com.squareup.okhttp3", name = "okhttp-brotli", version = "5.0.0-alpha.11")
