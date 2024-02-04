@@ -30,7 +30,7 @@ dependencies {
     implementation(group = "be.zvz", name = "KotlinInside", version = "1.16.1")
 
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.14.0")
-    implementation(group = "org.apache.commons", name = "commons-text", version = "1.10.0")
+    implementation(group = "org.apache.commons", name = "commons-text", version = "1.11.0")
     implementation(group = "club.minnced", name = "discord-webhooks", version = "0.8.4")
 
     implementation(group = "com.coreoz", name = "wisp", version = "2.4.0")
