@@ -24,7 +24,7 @@ dependencies {
 
     // Use the Kotlin JDK 8 standard library.
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8")
-    implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.7.3")
+    implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.8.0")
 
     // DC API
     implementation(group = "be.zvz", name = "KotlinInside", version = "1.16.1")
