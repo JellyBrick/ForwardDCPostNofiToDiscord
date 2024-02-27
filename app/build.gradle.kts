@@ -27,7 +27,7 @@ dependencies {
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.7.3")
 
     // DC API
-    implementation(group = "be.zvz", name = "KotlinInside", version = "1.16.1")
+    implementation(group = "be.zvz", name = "KotlinInside", version = "1.16.2")
 
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.14.0")
     implementation(group = "org.apache.commons", name = "commons-text", version = "1.10.0")
